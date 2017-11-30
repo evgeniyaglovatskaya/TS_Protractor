@@ -1,32 +1,33 @@
 import { browser, by, element } from 'protractor';
 
-
-const searchField = '#lst-ib';
+const searchField = element(by.css('#lst-ib'));
+// const searchField = '#lst-ib';
 const firstLink = 'div.g:nth-child(1) > div:nth-child(1) > div:nth-child(1) > h3:nth-child(1) > a:nth-child(1)';
 const searchBtn = 'btnK';
 
 
 export class AppPage {
-  navigateTo() {
+  async navigateTo() {
     browser.ignoreSynchronization = true;
-    return browser.get('http://www.google.com.ua');
+    await browser.get('http://www.google.com.ua');
+   await browser.wait(() => searchField.isPresent(), 5000, 'Not found');
   }
 
-  searchForText(text:string) {
-    element(by.css(searchField)).sendKeys(text);
-    element(by.name(searchBtn)).click();
+  async searchForText(text: string) {
+    await browser.wait(() => searchField.isPresent(), 5000, 'Not found');
+    await searchField.sendKeys(text);
+    await element(by.name(searchBtn)).click();
     // browser.actions().sendKeys(protractor.Key.ENTER).perform();
   }
 
-  getParagraphText() {
-    return element(by.css('body > app-root:nth-child(1) > app-test:nth-child(1) > h1:nth-child(1)')).getText();
+
+  async goToFirstLink() {
+    await element(by.css(firstLink)).click();
   }
 
-  goToFirstLink() {
-    element(by.css(firstLink)).click();
-  }
-
-  getCurrentUrl() {
-    return browser.getCurrentUrl();
+  async getCurrentUrl() {
+    const title = element(by.xpath('//*[@id="main"]/h1/a'));
+    await browser.wait(() => title.isPresent(), 5000, 'Not found');
+    return await browser.getCurrentUrl();
   }
 }
